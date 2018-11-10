@@ -1,0 +1,67 @@
+{
+  "name": "beer-fridge",
+  "description": "An app to control beer brewing equipment at home.",
+  "version": "0.0.0",
+  "homepage": "",
+  "main": "src",
+  "keywords": [
+    "feathers"
+  ],
+  "author": {
+    "name": "Matt Schrader",
+    "email": "SchraderMJ11@gmail.com"
+  },
+  "contributors": [],
+  "bugs": {},
+  "directories": {
+    "lib": "src",
+    "test": "test/"
+  },
+  "engines": {
+    "node": "^11.0.0",
+    "yarn": ">= 0.18.0"
+  },
+  "scripts": {
+    "test": "yarn run eslint && NODE_ENV= yarn run jest",
+    "eslint": "eslint src/. test/. --config .eslintrc.json",
+    "dev": "nodemon src/",
+    "start": "node src/",
+    "jest": "jest"
+  },
+  "dependencies": {
+    "@babel/core": "^7.1.5",
+    "@babel/preset-env": "^7.1.5",
+    "@babel/preset-react": "^7.0.0",
+    "@feathersjs/configuration": "^2.0.4",
+    "@feathersjs/errors": "^3.3.4",
+    "@feathersjs/express": "^1.2.7",
+    "@feathersjs/feathers": "^3.2.3",
+    "@feathersjs/socketio": "^3.2.7",
+    "@feathersjs/socketio-client": "^1.1.5",
+    "babel-loader": "^8.0.4",
+    "compression": "^1.7.3",
+    "cors": "^2.8.4",
+    "feathers-nedb": "^3.1.0",
+    "helmet": "^3.13.0",
+    "moment": "^2.22.2",
+    "nedb": "^1.8.0",
+    "react": "^16.6.1",
+    "react-dom": "^16.6.1",
+    "serve-favicon": "^2.5.0",
+    "socket.io-client": "^2.1.1",
+    "winston": "^3.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^23.6.0",
+    "node-sass": "^4.10.0",
+    "nodemon": "^1.18.6",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.25.1",
+    "webpack-dev-middleware": "^3.4.0",
+    "webpack-hot-middleware": "^2.24.3",
+    "webpack-livereload-plugin": "^2.1.1"
+  }
+}
