@@ -15,16 +15,7 @@ const services = require('./services');
 const appHooks = require('./app.hooks');
 const channels = require('./channels');
 
-const webpack = require('webpack');
-const webpackMiddleware = require('webpack-dev-middleware');
-const webpackConfig = require('../webpack.config');
-const webpackHotMiddleware = require("webpack-hot-middleware")
-
 const app = express(feathers());
-
-const compiler = webpack(webpackConfig)
-app.use(webpackMiddleware(compiler))
-app.use(webpackHotMiddleware(compiler))
 
 // Load app configuration
 app.configure(configuration());
