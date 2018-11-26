@@ -21,7 +21,9 @@ byte mac[6];
 ESP8266WebServer server ( 80 );
 
 bool fridgeEnabled = false;
-double SET_TEMP = 6.6;
+double setPoint = -1.0;
+float lowestTemp = -1.0;
+float onTempPoint = -1.0;
 
 const byte FRIDGE_PIN = 16;
 bool fridgeIsOn = false;
@@ -29,7 +31,7 @@ unsigned int stateChangeTime = 0;
 bool fridgeResting = false;
 int MAX_RUN_TIME = 1 * 60 * 60 * 1000;
 int MIN_RUN_TIME = 1 * 60 * 1000;
-int MIN_OFF_TIME = 1 * 60 * 1000;
+int MIN_OFF_TIME = 5 * 60 * 1000;
 
 String messagesUrl = (String)beerFridgeHost + (String)"/messages";
 
@@ -41,22 +43,45 @@ void setup() {
 
   pinMode(FRIDGE_PIN, OUTPUT);
 
-  // setup WiFi
   setup_wifi();
 
   // setup OneWire bus
   DS18B20.begin();
 }
 
+void updateTemperatureTolerance(float currentTemp) {
+  if (currentTemp > 0) {
+    if (lowestTemp < 0 || currentTemp < lowestTemp) {
+      lowestTemp = currentTemp;
+      if (lowestTemp < setPoint) {
+        onTempPoint = setPoint + ((setPoint - lowestTemp) / 2);
+      } else {
+        onTempPoint = setPoint;
+      }
+    }
+  } else {
+    lowestTemp = -1;
+    onTempPoint = setPoint;
+  }
+}
+
+float getTemperatureToGoTo() {
+  if (onTempPoint != -1.0) {
+    return onTempPoint;
+  }
+  return setPoint;
+}
+
 void loop() {
   server.handleClient();
 
   float temperature = getTemperature();
-  Serial.println(temperature);
   // convert temperature to a string with two digits before the comma and 2 digits for precision
   dtostrf(temperature, 2, 2, temperatureString);
 
-  if (fridgeEnabled && temperature > SET_TEMP) {
+  updateTemperatureTolerance(temperature);
+
+  if (fridgeEnabled && temperature > getTemperatureToGoTo()) {
     if (!fridgeIsOn) {
       if (millis() - stateChangeTime > MIN_OFF_TIME) {
         fridgeIsOn = true;
@@ -83,8 +108,6 @@ void loop() {
   }
 
   HTTPClient http;
-  Serial.print("requesting: ");
-  Serial.println(messagesUrl);
   http.begin(messagesUrl);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   String args;
@@ -117,9 +140,10 @@ void loop() {
   }
 
   if (root["targetTemperature"]) {
-    SET_TEMP = root["targetTemperature"];
+    setPoint = root["targetTemperature"];
+    fridgeEnabled = true;
     Serial.print("Set the temp to: ");
-    Serial.println(SET_TEMP);
+    Serial.println(setPoint);
   }
   http.end();
 
@@ -167,9 +191,9 @@ void handleConfigure() {
   } else {
     fridgeEnabled = config["enabled"];
     if (fridgeEnabled) {
-      SET_TEMP = config["setTemp"];
+      setPoint = config["setPoint"];
       Serial.print("Set the temp to: ");
-      Serial.println(SET_TEMP);
+      Serial.println(setPoint);
     }
     server.send(200, "text/plain", "Ok\n");
   }

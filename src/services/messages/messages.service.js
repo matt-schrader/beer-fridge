@@ -28,7 +28,7 @@ module.exports = function (app) {
           Promise.reject('Found more than one device matching the request!')
         }
 
-        const logTime = moment.utc()
+        const logTime = moment.utc().format()
         await deviceService.patch(device._id, { lastEventTime: logTime })
 
         if (data.temp) {
