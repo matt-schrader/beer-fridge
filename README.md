@@ -1,15 +1,19 @@
 # beer-fridge
 
-> An app to control beer brewing equipment at home.
+> A self hosted app to control beer brewing equipment at home.
 
 ## About
 
-This project uses [Feathers](http://feathersjs.com). An open source web framework for building modern real-time applications.
+This application supports the data model for Beer Fridge infrastructure.  Current features:
+1. Accepts messages from one or many temperature controlling devices.  These messages include the current power state and temperature of the device.
+2. Find simple keezer sketch in BeerFridgeSimple folder which will can run on NodeMCU (Arduino board with wifi)
+3. Accepts updating target temperature
 
 ## Getting Started
 
-Getting up and running is as easy as 1, 2, 3.
+The server can be run directly, or inside of a docker container.
 
+# Run directly
 1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
 2. Install your dependencies
 
@@ -23,25 +27,38 @@ Getting up and running is as easy as 1, 2, 3.
     npm start
     ```
 
-## Testing
+# Run in docker
+1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
+2. Build the image
+    ```
+    cd path/to/beer-fridge; npm run docker-build
+    ```
+3. Run the container
+    ```
+    cd path/to/beer-fridge; npm run docker-run
+    ```
 
-Simply run `npm test` and all your tests in the `test/` directory will be run.
+There is a client implementation in the beer-fridge-client repository which supports live updates and configuring devices.
 
-## Scaffolding
-
-Feathers has a powerful command line interface. Here are a few things it can do:
-
+Custom devices are easily supported.  It can send updates as frequently as necessary in the form
 ```
-$ npm install -g @feathersjs/cli          # Install Feathers CLI
-
-$ feathers generate service               # Generate a new Service
-$ feathers generate hook                  # Generate a new Hook
-$ feathers help                           # Show all commands
+POST http://<server-host>:3030/messages
+{
+    id: '<UNIQUE_ID>',
+    version: 0, // this is the current version of the device and will support receiving updates if device is out of sync, keep track of version or send zero to always receive updates
+    temp: 6.6, // temperature in celcius
+    state: 'ON' // ON OR OFF string
+}
 ```
 
-## Help
-
-For more information on all the things you can do with Feathers visit [docs.feathersjs.com](http://docs.feathersjs.com).
+Response will be in the following format:
+```
+{
+    version: 7,
+    hostname: '', // user configured name of device.  The BeerFridgeSimple sketch uses this to configure the dns of the arduino device.
+    targetTemperature: 6.6, // Set point for temperature the device should be held at
+}
+```
 
 ## Changelog
 
