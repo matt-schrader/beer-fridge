@@ -28,7 +28,7 @@
     "start": "node src/",
     "jest": "jest",
     "docker-build": "docker build -t beer-fridge .",
-    "docker-run": "docker run -p 3030:3030 --mount source=beer-vol,target=/usr/src/app/data -d --name beer-fridge beer-fridge"
+    "docker-run": "docker run --rm -p 3030:3030 --mount source=beer-vol,target=/usr/src/app/data -d --name beer-fridge beer-fridge"
   },
   "dependencies": {
     "@babel/core": "^7.1.5",
